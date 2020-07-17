@@ -48,7 +48,7 @@
         </div>
         <div class="field">
           <div class="control">
-            <input class="button is-link" type="submit" >Submit</button>
+            <input class="button is-link" type="submit" />
           </div>
         </div>
       </form>
