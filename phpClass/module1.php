@@ -1,9 +1,9 @@
 <html>
  <head>
-  <title>PHP Test</title>
+  <title>Module 1 Notes</title>
  </head>
  <body>
-    <h1>Module 1</h1>
+    <h1>Module 1 Notes</h1>
     <ol>
         <li><a href="#manual">PHP Manual</a></li>
     </ol>
@@ -26,6 +26,12 @@
         } else { echo 'You are not using Internet Explorer.<br />'; }
     ?>
     </p>
+    <hr />
+    <form action="action.php" method="post">
+     <p>Your name: <input type="text" name="name" /></p>
+     <p>Your age: <input type="text" name="age" /></p>
+     <p><input type="submit" /></p>
+    </form>
      
  </body>
 </html>
