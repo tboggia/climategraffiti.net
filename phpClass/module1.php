@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+  <!--https://bulma.io/documentation/helpers/typography-helpers/-->
   <title>Module 1 Notes</title>
 </head>
 <body>
@@ -33,9 +34,23 @@
       </p>
       <hr />
       <form action="action.php" method="post">
-        <p>Your name: <input type="text" name="name" /></p>
-        <p>Your age: <input type="text" name="age" /></p>
-        <p><input type="submit" /></p>
+        <div class="field">
+          <label class="label">Your name: </label>
+          <div class="control">
+            <input class="input" type="text" name="name"placeholder="Your Name">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Your age: </label>
+          <div class="control">
+            <input class="input" type="text" name="age" placeholder="Your Age">
+          </div>
+        </div>
+        <div class="field">
+          <div class="control">
+            <input class="button is-link" type="submit" >Submit</button>
+          </div>
+        </div>
       </form>
     </div>
   </section>
