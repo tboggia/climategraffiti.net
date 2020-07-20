@@ -14,15 +14,16 @@
         <li><a href="#manual">PHP Manual</a></li>
       </ol>
       <h2 id="manual">PHP Manual</h2>
+      <h3>Simple prints</h3>
       <p><code>php echo $_SERVER['HTTP_USER_AGENT'];</code></p>
       <p><?php echo $_SERVER['HTTP_USER_AGENT']; ?></p>
       <p><a href="https://www.php.net/manual/en/reserved.variables.php">Other Reserved Variables</a></p>
-      <hr/>
+      <h3>Simple if block</h3>
       <p>
         <code>
-          if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== FALSE) {
-            echo 'You are using Internet Explorer.<br />';
-          } else { echo 'You are not using Internet Explorer.<br />'; }
+          if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== FALSE) {<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;echo 'You are using Internet Explorer.&lt;br /&gt;';<br />
+          } else { echo 'You are not using Internet Explorer.&lt;br /&gt;'; }<br />
         </code>
       </p>
       <p>
@@ -32,7 +33,7 @@
         } else { echo 'You are not using Internet Explorer.<br />'; }
       ?>
       </p>
-      <hr />
+      <h3>Simple form</h3>
       <form action="action.php" method="post">
         <div class="field">
           <label class="label">Your name: </label>
@@ -52,6 +53,29 @@
           </div>
         </div>
       </form>
+      <h3>Variables</h3>
+      <code>
+        $a_bool = TRUE;   // a boolean<br />
+        $a_str  = "foo";  // a string<br />
+        $a_str2 = 'foo';  // a string<br />
+        $an_int = 12;     // an integer<br />
+        $an_arr = array('1', 2, "$a_bool"); // an indexed array<br />
+        $a_map = ["number" => '1',"integer" => 2, "String" => "$a_bool"]; // an associative array <br />
+        <br />
+        <?php
+          $a_bool = TRUE;   // a boolean
+          $a_str  = "foo";  // a string
+          $a_str2 = 'foo';  // a string
+          $an_int = 12;     // an integer
+          $an_arr = ['1', 2, "$a_bool", 'Hello World']; // an array
+          $a_map = ["number" => '1',"integer" => 2, "boolean" => "$a_bool", "string" => 'Hello World']; // a
+        ?>
+        echo gettype($a_bool); // prints out: <?php echo gettype($a_bool); ?><br />
+        echo var_dump($a_str);  // prints out: <?php echo var_dump($a_str); ?><br />
+        echo gettype($an_arr);  // prints out: <?php echo gettype($an_arr); ?><br />
+        echo var_dump($an_arr);  // prints out: <?php echo var_dump($an_arr); ?><br />
+        echo var_dump($a_map);  // prints out: <?php echo var_dump($a_map); ?><br />
+      </code>
     </div>
   </section>
 </body>
