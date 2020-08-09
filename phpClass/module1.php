@@ -59,22 +59,29 @@
         $a_str  = "foo";  // a string<br />
         $a_str2 = 'foo';  // a string<br />
         $an_int = 12;     // an integer<br />
-        $an_arr = array('1', 2, "$a_bool"); // an indexed array<br />
+        <a href="https://www.php.net/manual/en/language.types.array.php">$an_arr</a> = array('1', 2, "$a_bool"); // an indexed array<br />
         $a_map = ["number" => '1',"integer" => 2, "String" => "$a_bool"]; // an associative array <br />
+        $restructured_array = array_values($a_map); // a restructured array  <br />
+        $nested_array = [$a_map, $an_arr]; // a nested array  <br />
         <br />
         <?php
-          $a_bool = TRUE;   // a boolean
-          $a_str  = "foo";  // a string
-          $a_str2 = 'foo';  // a string
-          $an_int = 12;     // an integer
-          $an_arr = ['1', 2, "$a_bool", 'Hello World']; // an array
-          $a_map = ["number" => '1',"integer" => 2, "boolean" => "$a_bool", "string" => 'Hello World']; // a
+          error_reporting(E_ALL);
+          $a_bool = TRUE;
+          $a_str  = "foo";
+          $a_str2 = 'foo';
+          $an_int = 12;
+          $an_arr = ['1', 2, "$a_bool", 'Hello World'];
+          $a_map = ["number" => '1',"integer" => 2, "boolean" => "$a_bool", "string" => 'Hello World'];
+          $restructured_array = array_values($a_map);
+          $nested_array = [$a_map, $an_arr];
         ?>
         echo gettype($a_bool); // prints out: <?php echo gettype($a_bool); ?><br />
         echo var_dump($a_str);  // prints out: <?php echo var_dump($a_str); ?><br />
         echo gettype($an_arr);  // prints out: <?php echo gettype($an_arr); ?><br />
         echo var_dump($an_arr);  // prints out: <?php echo var_dump($an_arr); ?><br />
         echo var_dump($a_map);  // prints out: <?php echo var_dump($a_map); ?><br />
+        echo var_dump($restructured_array);  // prints out: <?php echo var_dump($restructured_array); ?><br />
+        echo var_dump($nested_array);  // prints out: <?php echo var_dump($nested_array); ?><br />
       </code>
     </div>
   </section>

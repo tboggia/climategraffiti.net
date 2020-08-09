@@ -1,0 +1,12 @@
+.grid {
+    display: grid;
+}
+
+.grid-calc {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(4, min-content);
+}
+
+.grid-gap-1 {
+  grid-gap: 1em;
+}
