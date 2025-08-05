@@ -1,4 +1,10 @@
 // Get references to DOM elements
+
+/**
+ * Move save data button after photo is taken
+ * Remove permisisons button if permissions are granted
+ * Open camera by default after permissions check
+ */
 const requestPermissionsBtn = document.getElementById('requestPermissionsBtn');
 const openCameraBtn = document.getElementById('openCameraBtn');
 const video = document.getElementById('video');
@@ -205,8 +211,7 @@ function capturePhoto() {
 }
 
 /**
- * Simulates saving the captured data (photo, lat/long, address) to a database.
- * In a real application, this would send the data to your PHP backend.
+ * Sends the captured data (photo, lat/long, address) to a PHP backend for saving.
  */
 async function saveData() {
   if (!capturedImageData) {
@@ -218,7 +223,7 @@ async function saveData() {
     return;
   }
 
-  showMessage('Simulating data save...', '');
+  showMessage('Saving data...', '');
 
   const dataToSave = {
     imageData: capturedImageData,
@@ -230,44 +235,28 @@ async function saveData() {
   console.log('Data prepared for saving:', dataToSave);
 
   try {
-    // In a real PHP/MySQL app, you would send this data via a fetch request:
-    /*
-    const response = await fetch('your_php_backend_endpoint.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json' // Or 'application/x-www-form-urlencoded' if using form data
-        },
-        body: JSON.stringify(dataToSave) // Send as JSON
-        // For file upload, you might use FormData if sending actual file blobs
+    // This is the fetch request to your PHP backend
+    const response = await fetch('save_data.php', { // Assuming save_data.php is in the root
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(dataToSave)
     });
 
-    const result = await response.json();
+    const result = await response.json(); // Assuming your PHP returns JSON
     if (response.ok) {
-        showMessage('Data saved successfully (Simulated)!', 'success');
-        console.log('Server response:', result);
-        // Reset UI or provide further feedback
+      showMessage(result.message, 'success');
+      console.log('Server response:', result);
+      // Optionally reset UI or provide further feedback
     } else {
-        showMessage(`Failed to save data (Simulated): ${result.message || 'Unknown error'}`, 'error');
-        console.error('Server error:', result);
+      showMessage(`Failed to save data: ${result.message || 'Unknown error'}`, 'error');
+      console.error('Server error:', result);
     }
-    */
-
-    // Simulate success after a delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    showMessage('Data saved successfully (Simulated)!', 'success');
-    console.log('Simulated save complete.');
-
-    // Optionally reset the app for a new capture
-    // photo.classList.add('hidden');
-    // capturedImageData = null;
-    // latitudeSpan.textContent = 'N/A';
-    // longitudeSpan.textContent = 'N/A';
-    // addressSpan.textContent = 'Fetching...';
-    // saveDataBtn.classList.add('hidden');
 
   } catch (error) {
-    showMessage(`Error during simulated save: ${error.message}`, 'error');
-    console.error('Error during simulated save:', error);
+    showMessage(`Error during data save: ${error.message}`, 'error');
+    console.error('Error during data save:', error);
   }
 }
 
@@ -279,8 +268,6 @@ saveDataBtn.addEventListener('click', saveData);
 
 // Initial setup on page load
 window.onload = () => {
-  // No need to call requestPermissions here, user will click the button
-  // to initiate the flow, giving them control.
-  // However, we can still try to get location if permission is already granted.
-  getLocation(); // Attempt to get location if allowed
+  // Attempt to get location if permission is already granted.
+  getLocation();
 };

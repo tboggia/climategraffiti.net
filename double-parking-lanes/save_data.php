@@ -1,4 +1,12 @@
 <?php
+
+require __DIR__ . '/vendor/autoload.php';
+
+use Dotenv\Dotenv;
+
+$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
 header('Content-Type: application/json');
 
 // Get the raw POST data
@@ -30,9 +38,9 @@ if ($data && isset($data['imageData']) && isset($data['latitude']) && isset($dat
         // 2. Save data to MySQL
         // Replace with your actual database connection details
         $servername = "localhost";
-        $username = "your_db_username";
-        $password = "your_db_password";
-        $dbname = "your_db_name";
+        $username = getenv('USR_DB_USERNAME');
+        $password = getenv('USR_DB_PASSWORD');
+        $dbname = getenv('USR_DB_NAME');
 
         try {
             $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
@@ -46,7 +54,8 @@ if ($data && isset($data['imageData']) && isset($data['latitude']) && isset($dat
 
             if ($stmt->execute()) {
                 $response['success'] = true;
-                $response['message'] = 'Data saved successfully!';
+                $response['message'] = 'Data saved to ' . getenv('USR_DB_NAME') . ' successfully!';
+
             } else {
                 $response['message'] = 'Failed to insert into database.';
             }

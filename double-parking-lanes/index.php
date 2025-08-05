@@ -39,7 +39,7 @@
             </div>
 
             <button id="saveDataBtn" class="w-full bg-red-600 text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 hidden">
-                Save Data (Simulated)
+                Save Data
             </button>
         </div>
     </div>

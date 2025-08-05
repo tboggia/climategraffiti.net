@@ -1,0 +1,18 @@
+{
+    "name": "tboggia/double-parking-lanes",
+    "description": "App to send double parking flags to the relevant electeds",
+    "require": {
+        "vlucas/phpdotenv": "^5.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Tboggia\\DoubleParkingLanes\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Tommaso",
+            "email": "tboggia@users.noreply.github.com"
+        }
+    ]
+}
