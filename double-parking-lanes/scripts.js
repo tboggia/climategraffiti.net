@@ -15,13 +15,14 @@ const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const photo = document.getElementById('photo');
 const locationInfo = document.getElementById('locationInfo');
-const addressSpan = document.getElementById('address');
+const citySpan = document.getElementById('city');
 const messageBox = document.getElementById('messageBox');
 const devMode = new URLSearchParams(window.location.search).get('dev') === 'true'; // Check if dev mode is enabled
 
 let currentStream; // To hold the camera stream
 let currentLatitude = null;
 let currentLongitude = null;
+let currentCity = null;
 let capturedImageData = null; // To store the base64 image data
 
 
@@ -84,23 +85,20 @@ async function requestPermissions() {
 function getLocation() {
   if (navigator.geolocation) {
     locationInfo.classList.remove('hidden');
-    addressSpan.textContent = 'Fetching...'; // Indicate that address is being fetched
+    citySpan.textContent = 'Fetching...';
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         currentLatitude = position.coords.latitude;
         currentLongitude = position.coords.longitude;
         showMessage('Location obtained successfully!', 'success');
-        if (capturedImageData) saveDataBtn.classList.remove('hidden'); // Show save button once location is available
 
         // Simulate reverse geocoding
-        await simulateReverseGeocoding(currentLatitude, currentLongitude);
+        await getReverseGeocoding(currentLatitude, currentLongitude);
       },
       (error) => {
         console.error('Error getting location:', error);
-        latitudeSpan.textContent = 'Error';
-        longitudeSpan.textContent = 'Error';
-        addressSpan.textContent = 'Error';
+        citySpan.textContent = 'Error';
         showMessage(`Error getting location: ${error.message}. Please enable location services.`, 'error');
         saveDataBtn.classList.add('hidden'); // Hide save button if location fails
       },
@@ -111,28 +109,7 @@ function getLocation() {
     locationInfo.classList.add('hidden');
   }
 }
-function getAddressFromLatLong($latitude, $longitude) {
-  $apiKey = "YOUR_GOOGLE_GEOCODING_API_KEY"; // Replace with your actual API key
-  $url = "https://maps.googleapis.com/maps/api/geocode/json?latlng={$latitude},{$longitude}&key={$apiKey}";
 
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, $url);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  $response = curl_exec($ch);
-  curl_close($ch);
-
-  $data = json_decode($response, true);
-
-  if ($data && $data['status'] === 'OK' && !empty($data['results'])) {
-    // Find a suitable address component, often the formatted_address of the first result
-    return $data['results'][0]['formatted_address'];
-  }
-  return 'Address not found';
-}
-
-// In your save_data.php:
-// $address = getAddressFromLatLong($latitude, $longitude);
-// Then save this $address to the database.
 /**
  * Simulates a reverse geocoding API call.
  * In a real application, this would be a fetch request to a server-side endpoint
@@ -140,26 +117,44 @@ function getAddressFromLatLong($latitude, $longitude) {
  * @param {number} lat Latitude.
  * @param {number} lon Longitude.
  */
-async function simulateReverseGeocoding(lat, lon) {
-  addressSpan.textContent = 'Fetching address...';
-  try {
-    // In a real app, you would make a fetch request to your backend here:
-    // const response = await fetch('/api/reverse-geocode', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({ lat, lon })
-    // });
-    // const data = await response.json();
-    // addressSpan.textContent = data.address || 'Address not found';
+async function getReverseGeocoding(lat, lon) {
+  citySpan.textContent = 'Fetching city...';
 
-    // For this demo, we'll just show a placeholder address after a delay
-    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
-    addressSpan.textContent = `Simulated Address for Lat: ${lat.toFixed(2)}, Lon: ${lon.toFixed(2)}`;
-    showMessage('Simulated address fetched.', 'success');
+  try {
+    // This is the fetch request to your PHP backend
+    const response = await fetch('get_address.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ latitude: lat, longitude: lon, devMode: devMode })
+    });
+
+    const result = await response.json(); // Assuming your PHP returns JSON
+
+    if (response.ok && result.success) {
+      showMessage(result.message, 'success');
+      const returnedAddressObject = JSON.parse(result.address);
+      console.log(returnedAddressObject)
+      const addressComponents = returnedAddressObject.address_components;
+      const componentsMap = addressComponents.map((components) => {
+        return components.types[0]
+      });
+
+      currentCity = addressComponents[componentsMap.indexOf('locality')].long_name;
+      citySpan.textContent = currentCity;
+
+      if (capturedImageData) saveDataBtn.classList.remove('hidden'); // Show save button once location is available
+
+    } else {
+      showMessage(`Failed to get city: ${result.message || 'Unknown error'}`, 'error');
+      citySpan.textContent = "Failed to get city";
+      console.error('Server error:', result);
+    }
+
   } catch (error) {
-    console.error('Error simulating reverse geocoding:', error);
-    addressSpan.textContent = 'Failed to get address (Simulated)';
-    showMessage('Failed to get address (Simulated).', 'error');
+    showMessage(`Error during city fetch: ${error.message}`, 'error');
+    console.error('Error during data save:', error);
   }
 }
 
@@ -242,7 +237,7 @@ async function saveData() {
     showMessage('No photo captured yet. Please capture a photo.', 'error');
     return;
   }
-  if (currentLatitude === null || currentLongitude === null) {
+  if ( currentCity === null ) {
     showMessage('Location data not available. Please ensure location services are enabled.', 'error');
     return;
   }
@@ -253,8 +248,8 @@ async function saveData() {
     imageData: capturedImageData,
     latitude: currentLatitude,
     longitude: currentLongitude,
-    address: addressSpan.textContent, // Use the displayed address
-    public: 0 // Use the displayed address
+    city: currentCity,
+    public: 0
   };
 
   console.log('Data prepared for saving:', dataToSave);

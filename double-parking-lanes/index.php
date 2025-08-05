@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo & Location App</title>
+    <title>Double Parking Lanes</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -27,7 +27,7 @@
 
             <div id="locationInfo" class="mt-6 p-4 bg-gray-50 rounded-lg text-left hidden">
                 <h2 class="text-xl font-semibold text-gray-700 mb-2">Location:</h2>
-                <p class="text-gray-600">Address: <span id="address">Fetching...</span></p>
+                <p class="text-gray-600">City: <span id="city">Fetching...</span></p>
             </div>
 
             <button id="saveDataBtn" class="w-full bg-green-600 text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 hidden">
@@ -39,7 +39,7 @@
         <button id="requestPermissionsBtn" class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
             Re-request Permissions
         </button>
-        <button id="purgeDataBtn" class="w-full bg-red-600 text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 hidden">
+        <button id="purgeDataBtn" class="w-full bg-red-600 text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 hidden">
             Purge Data
         </button>
 
