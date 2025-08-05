@@ -20,6 +20,8 @@ if ($data && isset($data['imageData']) && isset($data['latitude']) && isset($dat
     $latitude = $data['latitude'];
     $longitude = $data['longitude'];
     $address = $data['address'];
+    // $uploadsDir = $_ENV['UPLOADS_DIR'] . '/'; // Directory to save images
+    $uploadsDir = 'uploads/'; // Directory to save images
 
     // 1. Decode Base64 image data and save it
     // Example: data:image/png;base64,iVBORw0KGgo...
@@ -28,19 +30,17 @@ if ($data && isset($data['imageData']) && isset($data['latitude']) && isset($dat
     $imageData = base64_decode($imageData);
 
     $imageFileName = uniqid() . '.png'; // Generate unique file name
-    $uploadDir = 'uploads/'; // Directory to save images
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
+    if (!is_dir($uploadsDir)) {
+        mkdir($uploadsDir, 0777, true);
     }
-    $filePath = $uploadDir . $imageFileName;
+    $filePath = $uploadsDir . $imageFileName;
 
     if (file_put_contents($filePath, $imageData)) {
         // 2. Save data to MySQL
-        // Replace with your actual database connection details
-        $servername = "localhost";
-        $username = getenv('USR_DB_USERNAME');
-        $password = getenv('USR_DB_PASSWORD');
-        $dbname = getenv('USR_DB_NAME');
+        $servername = 'localhost';
+        $username = $_ENV['USR_DB_USERNAME'];
+        $password = $_ENV['USR_DB_PASSWORD'];
+        $dbname = $_ENV['USR_DB_NAME'];
 
         try {
             $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
@@ -60,7 +60,7 @@ if ($data && isset($data['imageData']) && isset($data['latitude']) && isset($dat
                 $response['message'] = 'Failed to insert into database.';
             }
         } catch(PDOException $e) {
-            $response['message'] = 'Database error: ' . $e->getMessage();
+            $response['message'] = 'Database error when connecting to: ' . $e->getMessage();
         }
         $conn = null; // Close connection
     } else {

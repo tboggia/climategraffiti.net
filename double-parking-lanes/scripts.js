@@ -7,21 +7,23 @@
  */
 const requestPermissionsBtn = document.getElementById('requestPermissionsBtn');
 const openCameraBtn = document.getElementById('openCameraBtn');
+const capturePhotoBtn = document.getElementById('capturePhotoBtn');
+const saveDataBtn = document.getElementById('saveDataBtn');
+const purgeDataBtn = document.getElementById('purgeDataBtn');
+
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const photo = document.getElementById('photo');
-const capturePhotoBtn = document.getElementById('capturePhotoBtn');
 const locationInfo = document.getElementById('locationInfo');
-const latitudeSpan = document.getElementById('latitude');
-const longitudeSpan = document.getElementById('longitude');
 const addressSpan = document.getElementById('address');
-const saveDataBtn = document.getElementById('saveDataBtn');
 const messageBox = document.getElementById('messageBox');
+const devMode = new URLSearchParams(window.location.search).get('dev') === 'true'; // Check if dev mode is enabled
 
 let currentStream; // To hold the camera stream
 let currentLatitude = null;
 let currentLongitude = null;
 let capturedImageData = null; // To store the base64 image data
+
 
 /**
  * Displays a message in the message box.
@@ -29,15 +31,13 @@ let capturedImageData = null; // To store the base64 image data
  * @param {string} type The type of message ('success', 'error', or default).
  */
 function showMessage(message, type = '') {
-  messageBox.textContent = message;
-  messageBox.className = 'message-box'; // Reset classes
+  messageBox.dataset.used = 'true'; // Mark message box as used
+  let newMessage = document.createElement('p');
+  newMessage.textContent = message;
+  messageBox.appendChild(newMessage);
   if (type) {
-    messageBox.classList.add(type);
+    newMessage.dataset.type = type;
   }
-  messageBox.style.display = 'block';
-  setTimeout(() => {
-    messageBox.style.display = 'none';
-  }, 5000); // Hide after 5 seconds
 }
 
 /**
@@ -61,6 +61,7 @@ async function requestPermissions() {
     if (cameraPermissionStatus.state === 'granted') {
       showMessage('Camera permission granted.', 'success');
       openCameraBtn.classList.remove('hidden');
+      openCamera();
     } else if (cameraPermissionStatus.state === 'prompt') {
       showMessage('Please allow camera access when prompted.', '');
     } else {
@@ -69,7 +70,8 @@ async function requestPermissions() {
 
     // Try to get location immediately after permissions are queried
     getLocation();
-    requestPermissionsBtn.classList.add('hidden'); // Hide after attempting permissions
+    if (geoPermissionStatus.state === 'granted' || cameraPermissionStatus.state === 'granted') requestPermissionsBtn.classList.add('hidden'); // Hide after permissions are requested
+
   } catch (error) {
     showMessage(`Error requesting permissions: ${error.message}`, 'error');
     console.error('Error requesting permissions:', error);
@@ -82,18 +84,14 @@ async function requestPermissions() {
 function getLocation() {
   if (navigator.geolocation) {
     locationInfo.classList.remove('hidden');
-    latitudeSpan.textContent = 'Fetching...';
-    longitudeSpan.textContent = 'Fetching...';
     addressSpan.textContent = 'Fetching...'; // Indicate that address is being fetched
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         currentLatitude = position.coords.latitude;
         currentLongitude = position.coords.longitude;
-        latitudeSpan.textContent = currentLatitude.toFixed(6);
-        longitudeSpan.textContent = currentLongitude.toFixed(6);
         showMessage('Location obtained successfully!', 'success');
-        saveDataBtn.classList.remove('hidden'); // Show save button once location is available
+        if (capturedImageData) saveDataBtn.classList.remove('hidden'); // Show save button once location is available
 
         // Simulate reverse geocoding
         await simulateReverseGeocoding(currentLatitude, currentLongitude);
@@ -113,7 +111,28 @@ function getLocation() {
     locationInfo.classList.add('hidden');
   }
 }
+function getAddressFromLatLong($latitude, $longitude) {
+  $apiKey = "YOUR_GOOGLE_GEOCODING_API_KEY"; // Replace with your actual API key
+  $url = "https://maps.googleapis.com/maps/api/geocode/json?latlng={$latitude},{$longitude}&key={$apiKey}";
 
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $url);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  $response = curl_exec($ch);
+  curl_close($ch);
+
+  $data = json_decode($response, true);
+
+  if ($data && $data['status'] === 'OK' && !empty($data['results'])) {
+    // Find a suitable address component, often the formatted_address of the first result
+    return $data['results'][0]['formatted_address'];
+  }
+  return 'Address not found';
+}
+
+// In your save_data.php:
+// $address = getAddressFromLatLong($latitude, $longitude);
+// Then save this $address to the database.
 /**
  * Simulates a reverse geocoding API call.
  * In a real application, this would be a fetch request to a server-side endpoint
@@ -149,6 +168,9 @@ async function simulateReverseGeocoding(lat, lon) {
  */
 async function openCamera() {
   showMessage('Opening camera...', '');
+  capturedImageData = null;
+  photo.classList.add('hidden');
+
   try {
     // Stop any existing stream
     if (currentStream) {
@@ -206,8 +228,10 @@ function capturePhoto() {
 
   capturePhotoBtn.classList.add('hidden');
   openCameraBtn.classList.remove('hidden'); // Allow opening camera again
-  saveDataBtn.classList.remove('hidden'); // Ensure save button is visible
+
   showMessage('Photo captured!', 'success');
+  if (currentLatitude) saveDataBtn.classList.remove('hidden'); // Show save button once location is available
+
 }
 
 /**
@@ -229,14 +253,15 @@ async function saveData() {
     imageData: capturedImageData,
     latitude: currentLatitude,
     longitude: currentLongitude,
-    address: addressSpan.textContent // Use the displayed address
+    address: addressSpan.textContent, // Use the displayed address
+    public: 0 // Use the displayed address
   };
 
   console.log('Data prepared for saving:', dataToSave);
 
   try {
     // This is the fetch request to your PHP backend
-    const response = await fetch('save_data.php', { // Assuming save_data.php is in the root
+    const response = await fetch('save_data.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -245,7 +270,9 @@ async function saveData() {
     });
 
     const result = await response.json(); // Assuming your PHP returns JSON
-    if (response.ok) {
+    console.log('Server response:', result);
+    console.log('Server response:', response);
+    if (response.ok && result.success) {
       showMessage(result.message, 'success');
       console.log('Server response:', result);
       // Optionally reset UI or provide further feedback
@@ -260,14 +287,45 @@ async function saveData() {
   }
 }
 
+async function purgeData() {
+  showMessage('Purging data...', '');
+  try {
+    // This is the fetch request to your PHP backend
+    const response = await fetch('purge_data.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const result = await response.json(); // Assuming your PHP returns JSON
+    if (response.ok && result.success) {
+      showMessage(result.message, 'success');
+      console.log('Data purged successfully:', result);
+      // Optionally reset UI or provide further feedback
+    } else {
+      showMessage(`Failed to purge data: ${result.message || 'Unknown error'}`, 'error');
+      console.error('Server error:', result);
+    }
+
+  } catch (error) {
+    showMessage(`Error during data purge: ${error.message}`, 'error');
+    console.error('Error during data purge:', error);
+  }
+} 
+
 // Event Listeners
 requestPermissionsBtn.addEventListener('click', requestPermissions);
 openCameraBtn.addEventListener('click', openCamera);
 capturePhotoBtn.addEventListener('click', capturePhoto);
 saveDataBtn.addEventListener('click', saveData);
+purgeDataBtn.addEventListener('click', purgeData);
 
 // Initial setup on page load
 window.onload = () => {
   // Attempt to get location if permission is already granted.
-  getLocation();
+  requestPermissions();
+  if (devMode) {
+    purgeDataBtn.classList.remove('hidden'); // Show purge button in dev mode
+  }
 };
