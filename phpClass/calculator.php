@@ -1,13 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
-  <!--https://bulma.io/documentation/helpers/typography-helpers/-->
-  <link rel="stylesheet" href="css/custom.css">
-  <title><?php echo $pageTitle ?></title>
-</head>
-<body>
   <!-- 
     Created by: Tommaso Nicholas Boggia
     On: July 27, 2020
@@ -15,7 +5,8 @@
    -->
   <?php 
     $pageTitle = 'Your calculation result';
-    // include("/common/header.inc.php");
+    include (dirname(__DIR__) . '/phpClass/common/constants.inc.php');
+    include (ROOT_PATH . 'common/header.inc.php');
   ?>
   <section class="section">
     <div class="container">
@@ -39,7 +30,8 @@
         $notNums = array();
 
         foreach ($_POST as $num) {
-          if ($num == '0' || (int)$num !== 0) { // Try is_numeric()?
+          // Try is_numeric()?
+          if ($num == '0' || (int)$num !== 0) { 
             $nums[] = (int)$num;
             $numSum += $num;
           } else {
@@ -138,8 +130,4 @@
     </div>
 
   </section>
-  <?php /* include("/common/footer.inc.php"); */?> 
-
-  
-</body>
-</html>
+  <?php include (ROOT_PATH . 'common/footer.inc.php'); ?> 

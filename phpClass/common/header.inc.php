@@ -8,3 +8,18 @@
   <title><?php echo $pageTitle ?></title>
 </head>
 <body>
+<?php 
+  function var_dump_ret($mixed = null) {
+    ob_start();
+    var_dump($mixed);
+    $content = ob_get_contents();
+    ob_end_clean();
+    return $content;
+  }
+  function log_to_console($string_to_log = "") {
+    $str_log = preg_replace("/\n/", "", $string_to_log);
+    echo "<script>
+      console.log('$str_log');
+    </script>";
+  }
+?>
