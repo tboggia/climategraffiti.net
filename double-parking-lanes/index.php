@@ -13,10 +13,6 @@
         <h1 class="text-3xl font-bold text-gray-800 mb-6">Double Parking Lanes</h1>
 
         <div class="space-y-4">
-            <button id="openCameraBtn" class="w-auto bg-orange-600 text-white py-3 px-3 rounded-md text-md font-semibold hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 hidden">
-                Take another photo
-            </button>
-
             <video id="video" class="hidden" autoplay playsinline></video>
             <canvas id="canvas" class="hidden"></canvas>
             <img id="photo" class="hidden" alt="Captured Photo">
@@ -25,15 +21,18 @@
                 Capture Photo
             </button>
 
-            <div id="locationInfo" class="mt-6 p-4 bg-gray-50 rounded-lg text-left hidden">
-                <h2 class="text-xl font-semibold text-gray-700 mb-2">Location:</h2>
-                <p class="text-gray-600">City: <span id="city">Fetching...</span></p>
-            </div>
-
             <button id="saveDataBtn" class="w-full bg-green-600 text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 hidden">
                 Save Data
             </button>
 
+            <button id="openCameraBtn" class="w-auto bg-orange-600 text-white py-3 px-3 rounded-md text-md font-semibold hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 hidden">
+                Take another photo
+            </button>
+
+            <div id="locationInfo" class="mt-6 p-4 bg-gray-50 rounded-lg text-left hidden">
+                <h2 class="text-xl font-semibold text-gray-700 mb-2">Location:</h2>
+                <p class="text-gray-600">City: <span id="city">Fetching...</span></p>
+            </div>
         </div>
 
         <button id="requestPermissionsBtn" class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">

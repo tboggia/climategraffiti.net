@@ -15,11 +15,11 @@ $data = json_decode($json, true);
 
 $response = ['success' => false, 'message' => ''];
 
-if ($data && isset($data['imageData']) && isset($data['latitude']) && isset($data['longitude']) && isset($data['address'])) {
+if ($data && isset($data['imageData']) && isset($data['latitude']) && isset($data['longitude']) && isset($data['city'])) {
     $imageData = $data['imageData'];
     $latitude = $data['latitude'];
     $longitude = $data['longitude'];
-    $address = $data['address'];
+    $city = $data['city'];
     // $uploadsDir = $_ENV['UPLOADS_DIR'] . '/'; // Directory to save images
     $uploadsDir = 'uploads/'; // Directory to save images
 
@@ -46,11 +46,11 @@ if ($data && isset($data['imageData']) && isset($data['latitude']) && isset($dat
             $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            $stmt = $conn->prepare("INSERT INTO photos (image_path, latitude, longitude, address, created_at) VALUES (:image_path, :latitude, :longitude, :address, NOW())");
+            $stmt = $conn->prepare("INSERT INTO photos (image_path, latitude, longitude, city, created_at) VALUES (:image_path, :latitude, :longitude, :city, NOW())");
             $stmt->bindParam(':image_path', $filePath);
             $stmt->bindParam(':latitude', $latitude);
             $stmt->bindParam(':longitude', $longitude);
-            $stmt->bindParam(':address', $address);
+            $stmt->bindParam(':city', $city);
 
             if ($stmt->execute()) {
                 $response['success'] = true;

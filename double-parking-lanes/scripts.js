@@ -264,11 +264,12 @@ async function saveData() {
       body: JSON.stringify(dataToSave)
     });
 
-    const result = await response.json(); // Assuming your PHP returns JSON
-    console.log('Server response:', result);
-    console.log('Server response:', response);
+    const result = await response.json();
+    
     if (response.ok && result.success) {
       showMessage(result.message, 'success');
+      saveDataBtn.classList.add('hidden');
+      openCameraBtn.classList.add('hidden');
       console.log('Server response:', result);
       // Optionally reset UI or provide further feedback
     } else {
